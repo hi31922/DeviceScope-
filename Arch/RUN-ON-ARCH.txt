@@ -1,0 +1,38 @@
+DeviceScope 0.8.0 - native Arch Linux launch
+
+Copy DeviceScope-0.8.0-linux-x86_64.run to your Arch installation or USB drive.
+The same file that ran under Arch WSL contains a native x86-64 Linux runtime.
+No rebuild is needed for a normal x86-64 Arch desktop.
+
+1. Log into your Arch graphical desktop as your ordinary user.
+   The desktop must provide X11, or XWayland in a Wayland session.
+
+2. Open a terminal in the folder containing the .run file and run:
+
+   sh ./DeviceScope-0.8.0-linux-x86_64.run
+
+   This command also works if copying from Windows or USB lost the executable bit.
+   Python and Tcl/Tk are included in the file.
+
+3. For the packaged checks, run in that same folder:
+
+   sh ./DeviceScope-0.8.0-linux-x86_64.run --self-test
+
+   On an ordinary Linux account with a display and pidfd support, this includes
+   the process-stop test that was skipped in your root WSL session. It stops
+   only a temporary test worker it starts and checks its sibling stays alive.
+
+4. To collect a local read-only hardware report:
+
+   sh ./DeviceScope-0.8.0-linux-x86_64.run --report > devicescope-report.json
+
+The regular launch reads that Arch installation's real /sys and /proc data.
+GPU load, temperatures, SMART and Bluetooth depend on actual drivers, hardware
+and access permissions; unavailable readings stay unavailable. This native
+hardware validation is the part the earlier WSL test could not establish.
+
+Optional system tools for richer details: smartmontools, kmod and hwdata.
+NVIDIA telemetry uses nvidia-smi supplied by an installed NVIDIA driver.
+
+See README.md for the portable package's requirements and VERIFICATION.md
+for the checks already completed.

@@ -1,0 +1,24 @@
+# Keep the frozen school copy separate from active development.
+/Debian-backup/
+
+# Release binaries are distributed separately from source history.
+*.exe
+*.run
+*.run.sha256
+*.deb
+*.deb.sha256
+
+# Build/runtime caches and editor files.
+__pycache__/
+*.py[cod]
+dist/
+packaging/runtime.tar.gz
+packaging/qa-*/
+packaging/qa-*.tar.gz
+.verification-*
+.vs/
+.idea/
+*.user
+*.suo
+Thumbs.db
+.DS_Store
