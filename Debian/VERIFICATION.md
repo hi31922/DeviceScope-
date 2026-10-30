@@ -26,7 +26,7 @@ server. Reported supported display modes are the active driver/server's modes,
 not proof of every physical panel capability. No drivers, firmware settings,
 Secure Boot settings, or privileges were changed.
 
-Release SHA-256: `9107d0d629f6bf1e7e954b82710bdc1676b82eb437c8aed893eaa292fdefa02e`.
+Release SHA-256: `3973f8a30806b19041eefca8278c107e0759b1ff84344b572a83299c71fb6e24`.
 
 The separate Debian-backup school copy is excluded from this update and remains byte-identical.
 
@@ -86,3 +86,5 @@ All application modules/tests match the previously audited build byte for byte.
 The licensed final packages passed all 110 tests per edition under ordinary-user
 WSL. Archive layout, notices, hashes and packaged/source consistency passed.
 This packaging update does not change the GUI, sizes, readers or functionality.
+
+Copyright attribution corrected to HexW on 2026-10-31. Only license/author metadata and archive checksums were changed; application behavior is unchanged.

@@ -135,7 +135,7 @@ def build(portable, output):
                 icon = app.read("devicescope/icon.png")
             if icon[:8] != b"\x89PNG\r\n\x1a\n":
                 raise ValueError("Missing app icon.")
-        copyright_text = ("DeviceScope application: Twoball.\n"
+        copyright_text = ("DeviceScope application: HexW.\n"
                           "DeviceScope application code: MIT license. See /usr/share/doc/devicescope/LICENSE.\n"
                           "Bundled Python and native libraries retain their upstream licenses.\n"
                           "Notices: /opt/devicescope/app/third-party-licenses/ and\n"

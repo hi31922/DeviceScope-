@@ -28,7 +28,7 @@ by the labelled test fixtures, which exist only in the separate test harness.
 Arch, Debian and Debian-backup are excluded from this update.
 Previous Windows source/build copies are in the local development audit folder.
 
-Release SHA-256: `4e551ede550285cb6840e7734b47dc5ca6847387bc94e3bf7f09a918d04f7beb`.
+Release SHA-256: `32dab0ce99833726112bcb1c646f4a9c7bbeef6251ad6927ab865c2e147106b4`.
 
 ## Stable tabs and gray palette update - 2026-10-30
 
@@ -71,3 +71,5 @@ Only Inventory.cs snapshot-saving logic and the EXE changed in this edition.
 The host filesystem was NTFS. FAT/exFAT and rare partial ReplaceFile failures
 were reviewed but not physically exercised; universal power-loss guarantees
 are not claimed. Layout, title, font, dimensions, readers and versions are unchanged.
+
+Copyright attribution corrected to HexW on 2026-10-31. Only license/author metadata and archive checksums were changed; application behavior is unchanged.

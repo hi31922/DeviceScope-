@@ -121,6 +121,6 @@ Linux coverage grows.
 ## License
 
 DeviceScope application code is licensed under [MIT](LICENSE), copyright 2026
-Twoball. Bundled dependencies retain their own licenses; see the
+HexW. Bundled dependencies retain their own licenses; see the
 [third-party runtime notices](Arch/THIRD_PARTY.md) and the license files included
 with each Linux payload.

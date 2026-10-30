@@ -23,7 +23,7 @@ server. Reported supported display modes are the active driver/server's modes,
 not proof of every physical panel capability. No drivers, firmware settings,
 Secure Boot settings, or privileges were changed.
 
-Release SHA-256: `799c1a3c0a9ca42e81245e0c9c866207d8a01145f7e026b6a8e9a64a9e0d9e57`.
+Release SHA-256: `c5c791465e7c80077600339b771c67cd585a63885fd9e9bf83029f9e7cea2c46`.
 
 Other release folders and the separate school backup were excluded from this Arch update.
 
@@ -95,3 +95,5 @@ All application modules/tests match the previously audited build byte for byte.
 The licensed final packages passed all 110 tests per edition under ordinary-user
 WSL. Archive layout, notices, hashes and packaged/source consistency passed.
 This packaging update does not change the GUI, sizes, readers or functionality.
+
+Copyright attribution corrected to HexW on 2026-10-31. Only license/author metadata and archive checksums were changed; application behavior is unchanged.
