@@ -23,7 +23,7 @@ server. Reported supported display modes are the active driver/server's modes,
 not proof of every physical panel capability. No drivers, firmware settings,
 Secure Boot settings, or privileges were changed.
 
-Release SHA-256: `b3384b28a08014cf2b9a351ee5d29b44d121002e1f813a1341367dc9d495668e`.
+Release SHA-256: `799c1a3c0a9ca42e81245e0c9c866207d8a01145f7e026b6a8e9a64a9e0d9e57`.
 
 Other release folders and the separate school backup were excluded from this Arch update.
 
@@ -44,3 +44,54 @@ the skip is the ordinary-user pidfd integration test because Arch runs as root.
 Archive integrity, executable modes, source syntax, runtime resources and exact
 packaged/source GUI correspondence passed. Testing is under WSL, not physical Arch.
 
+
+## In-content branding removal - 2026-10-30
+
+Only the five header-frame/branding-label construction lines in gui.py were
+removed. Window title, default 1180x800 size, minimum 840x620, styles, controls,
+icon, six tabs, collectors and interactions are unchanged. Comparative native
+Tk checks passed for both editions (20 checks total). Packaged tests passed:
+Arch 102 tests with the existing root-account integration skip; Debian 102 tests
+with no skips. Archive and payload/source consistency checks passed.
+No Windows or Debian-backup files were included. Package/app versions remain
+unchanged; updating an already installed Debian copy requires apt --reinstall.
+
+## Release audit - 2026-10-30
+
+Fixed two snapshot-comparison races: an old import could restore a comparison
+after Clear comparison, and a newer file choice was silently discarded while
+an import was running (including when the earlier file failed to load). Generation
+guards reject obsolete results and queue only the newest requested file.
+Three deterministic regressions failed before and passed after the fix.
+All 105 packaged tests passed with no skips in Arch WSL under an ordinary
+non-root account, including the selected-only disposable-worker integration test.
+Package integrity and exact packaged/source application correspondence passed.
+Application changes are confined to comparison-loading logic; existing size,
+layout, styling, branding removal, readers and process controls are unchanged.
+WSL does not establish physical sensor, SMART transport or firmware compatibility.
+
+## Second release audit - 2026-10-30
+
+Fixed three Linux snapshot/export bugs. A successful inventory containing zero
+devices can now be exported as a valid empty snapshot; an initial failed scan
+still cannot export. Export requests made while a write is active now show an
+in-progress message before opening another Save dialog, avoiding silently discarded
+destinations. Snapshot validation now rejects lone Unicode surrogates in text
+or keys before Tk rendering; valid supplementary Unicode remains supported.
+Both export regressions and 12 malformed-Unicode subcases failed before the fixes.
+The final package passed all 110 tests under ordinary-user WSL with no skips.
+The independent .deb/payload/source checks and real Debian report also passed.
+Application changes are confined to export state/guards and snapshot validation;
+there is no layout, size, style, branding, collector or process-control change.
+Linux results are under WSL, not physical sensor/SMART/firmware validation.
+The package/application versions are unchanged; use apt --reinstall to replace
+an installed Debian copy. No installation or GitHub upload was performed here.
+
+## Public release packaging - 2026-10-30
+
+The MIT application notice is now included as app/LICENSE. Third-party notices
+remain intact. Debian also installs its application notice in /usr/share/doc.
+All application modules/tests match the previously audited build byte for byte.
+The licensed final packages passed all 110 tests per edition under ordinary-user
+WSL. Archive layout, notices, hashes and packaged/source consistency passed.
+This packaging update does not change the GUI, sizes, readers or functionality.

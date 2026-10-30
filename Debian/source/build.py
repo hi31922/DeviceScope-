@@ -124,7 +124,7 @@ def build(output, allow_download=True):
                 if required not in names:
                     raise RuntimeError(f"Pinned runtime is missing {required}")
             add_bytes(target, "app/DeviceScope.pyz", app_zip())
-            for filename in ("README.md", "THIRD_PARTY.md"):
+            for filename in ("README.md", "THIRD_PARTY.md", "LICENSE"):
                 path = ROOT / filename
                 if path.exists():
                     add_bytes(target, "app/" + filename, path.read_bytes())

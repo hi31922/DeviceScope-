@@ -188,7 +188,10 @@ class DeviceScope:
         self.jobs = set()
         self.results = queue.Queue()
         self.devices = []
+        self.inventory_loaded = False
         self.previous = None
+        self.comparison_generation = 0
+        self.pending_comparison = None
         self.processes = []
         self.disk_data = {}
         self.specification_data = None
@@ -213,11 +216,6 @@ class DeviceScope:
         except (OSError, tk.TclError):
             pass
         root.protocol("WM_DELETE_WINDOW", self.close)
-        header = tk.Frame(root, bg="#10213a", padx=22, pady=16)
-        header.pack(fill="x")
-        tk.Label(header, text="DeviceScope", font=("TkDefaultFont", 23, "bold"), fg="white", bg="#10213a").pack(side="left")
-        tk.Label(header, text=f"LINUX  /  {__version__}", font=("TkDefaultFont", 10, "bold"), fg="#9fc4ff", bg="#10213a", padx=18).pack(side="left")
-        tk.Label(header, text="Know what your computer is running.", fg="#bdcbe1", bg="#10213a").pack(side="right")
         self.tabs = ttk.Notebook(root, padding=12, style="Main.TNotebook")
         self.tabs.pack(fill="both", expand=True)
         self.device_tab = self._tab("Devices & Drivers")
@@ -346,6 +344,7 @@ class DeviceScope:
         self.footer.set("Reading Linux hardware inventory in the background...")
         def done(report):
             self.devices = report["devices"]
+            self.inventory_loaded = True
             categories = ["All categories"]+sorted({str(r.get("category", "Unknown")) for r in self.devices})
             self.category.configure(values=categories)
             if self.device_category.get() not in categories:
@@ -377,7 +376,10 @@ class DeviceScope:
                                 "Select a device to view its real hardware IDs, sysfs path and classification evidence.")
 
     def export(self):
-        if not self.devices:
+        if "Snapshot export" in self.jobs:
+            self.footer.set("A snapshot export is already in progress. Wait for it to finish before exporting again.")
+            return
+        if not self.inventory_loaded:
             self.footer.set("Wait for a successful scan before exporting.")
             return
         path = filedialog.asksaveasfilename(parent=self.root, title="Export device snapshot", defaultextension=".json", filetypes=[("JSON snapshot", "*.json")])
@@ -388,13 +390,37 @@ class DeviceScope:
     def compare(self):
         path = filedialog.askopenfilename(parent=self.root, title="Compare Linux device snapshot", filetypes=[("JSON snapshot", "*.json")])
         if path:
-            def done(previous):
-                self.previous = previous
-                self.filter_devices()
-                self.footer.set("Snapshot comparison loaded. Select a changed device for previous values.")
-            self._submit("Snapshot import", lambda: load_snapshot(path), done)
+            self.comparison_generation += 1
+            self.pending_comparison = (path, self.comparison_generation)
+            self._load_pending_comparison()
+
+    def _load_pending_comparison(self):
+        if self.closed or self.pending_comparison is None or "Snapshot import" in self.jobs:
+            return
+        path, generation = self.pending_comparison
+        self.pending_comparison = None
+        def task():
+            try:
+                return load_snapshot(path), None
+            except Exception as exc:
+                return None, exc
+        def done(result):
+            previous, error = result
+            if generation == self.comparison_generation:
+                if error is None:
+                    self.previous = previous
+                    self.filter_devices()
+                    self.footer.set("Snapshot comparison loaded. Select a changed device for previous values.")
+                else:
+                    self.footer.set(f"Snapshot import: {error}. Previous successful data was kept.")
+            # If another file was selected while this read ran, load that file
+            # next. Obsolete successes and failures must not replace its state.
+            self._load_pending_comparison()
+        self._submit("Snapshot import", task, done)
 
     def clear_comparison(self):
+        self.comparison_generation += 1
+        self.pending_comparison = None
         self.previous = None
         self.changes_only.set(False)
         self.filter_devices()

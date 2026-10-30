@@ -31,6 +31,30 @@ class SnapshotTests(unittest.TestCase):
         self.assertNotIn("change", loaded[0])
         self.assertEqual(list(Path(self.directory.name).iterdir()), [self.path])
 
+    def test_escaped_unpaired_surrogates_rejected_before_rendering(self):
+        save_snapshot(self.path, [device()])
+        original = json.loads(self.path.read_text(encoding="utf-8"))
+        for invalid in (chr(0xd800), chr(0xdfff)):
+            for row in (device(name=invalid), device(id=invalid),
+                        device(hardware_ids=[invalid]), device(driver=invalid),
+                        device(details={invalid: "value"}),
+                        device(details={"property": invalid})):
+                document = dict(original, devices=[row])
+                # JSON escapes can represent a lone surrogate even though the
+                # resulting Python string cannot be sent to Tk as UTF-8.
+                self.path.write_text(json.dumps(document), encoding="utf-8")
+                with self.subTest(row=row), self.assertRaisesRegex(ValueError, "Unicode"):
+                    load_snapshot(self.path)
+
+    def test_supplementary_unicode_remains_valid(self):
+        original = device(name="Controller \U0001f5a5", details={"\U0001f50c": "Connected \U0001f680"})
+        save_snapshot(self.path, [original])
+        self.assertEqual([original], load_snapshot(self.path))
+        # A valid escaped surrogate pair is decoded to one Unicode scalar.
+        document = json.loads(self.path.read_text(encoding="utf-8"))
+        self.path.write_text(json.dumps(document), encoding="utf-8")
+        self.assertEqual([original], load_snapshot(self.path))
+
     def test_mixed_changes_and_previous_values(self):
         before = [device(), device("gone"), device("stable")]
         current = [device(driver="xe"), device("new"), device("stable")]

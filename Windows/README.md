@@ -1,4 +1,4 @@
-﻿# DeviceScope
+# DeviceScope
 
 Windows 10/11 x64 desktop app. Close the older version and run `DeviceScope-0.8.exe`. All six main sections open inside the same window. No local web server or internet connection is required.
 
@@ -31,13 +31,24 @@ APIs. Two offscreen WPF renders of the new tab were inspected at 1040 and 840 pi
 The prior five tabs also passed their 35 component checks with ten offscreen renders.
 These reads do not establish all-machine hardware/provider compatibility.
 
-## Windows 0.7 interface
+## Compact classic Windows interface
 
-The Windows edition now shares the Linux edition's navy header, light canvas, flat tabs/buttons, white tables, dark text and blue selection colors. Device and diagnostics lists sit above adjustable detail panels. Live Performance uses CPU/RAM/GPU/temperature cards in a scrollable 2x2 layout and retains the Windows GPU-engine table. The smaller default window is 1040x720; the minimum is 840x620.
+The initial window is 700 x 580 physical pixels, including its standard title bar.
+The window accounts for the active Windows display scaling when first created
+and can be enlarged. The title is System Information. The content has no app-name,
+platform/version banner or tagline. The existing EXE/title-bar icon is retained.
 
-This update retains the native Windows WPF application and its existing inventory, diagnostic, performance, SMART and selected-process control implementations. It does not substitute Linux data sources. `UiTheme.cs` contains the shared WPF theme; the icon remains in the EXE/title bar, not the content header. Other platform releases are separate.
+Tahoma typography, neutral gray panels, raised buttons, inset white lists, blue
+selection and tab borders follow an XP-era utility style. All six tabs remain;
+their headers wrap in a stable order without rearranging when selected. Toolbars reflow, list
+columns can be resized/scrolled, long inventory values have tooltips, and the
+selected device's full information stays in the lower panel. Performance and
+specifications retain vertical scrolling. The Windows title-bar decoration is
+provided by the current operating system.
 
-The supplied computer/magnifier artwork is embedded into the EXE at seven icon sizes and used as its file/title-bar icon. It is not displayed in the app's content header. The ICO is included for rebuilding; the EXE needs no sidecar image file.
+This is a native WPF presentation update. Inventory and hardware readers, process
+guards, snapshots, diagnostic logic and copy-report formatting are unchanged.
+UiTheme.cs contains the common control styles. Linux releases are separate.
 
 ## Devices & Drivers
 
@@ -111,3 +122,11 @@ Reference documentation: [Windows system CPU timing](https://learn.microsoft.com
 ## Copy specifications update — 2026-10-29
 
 The tab-local Copy specifications button copies the complete cached report, including all GPUs, off-screen rows, display modes and collection notes, using the native persistent Windows clipboard. Copying is disabled until a report loads; clipboard failures are reported honestly. The previous displayed report remains copyable during refresh. Twenty-three focused checks passed with an isolated clipboard writer so the user clipboard was not overwritten during verification. Other Windows application source and collectors are unchanged.
+
+
+## License
+
+DeviceScope application code is licensed under MIT; see LICENSE included with the Windows ZIP. The Windows .NET Framework is supplied by the operating system, not bundled in this archive.
+
+
+This download is DeviceScope 0.8.0 Beta 1. Please report reproducible problems through the GitHub Issues page.

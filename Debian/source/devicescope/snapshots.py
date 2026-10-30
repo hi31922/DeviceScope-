@@ -28,6 +28,10 @@ def _json_value(value, depth=0):
     if isinstance(value, str):
         if len(value) > 1024 * 1024:
             raise ValueError("A snapshot text field exceeds its size limit.")
+        try:
+            value.encode("utf-8")
+        except UnicodeEncodeError as exc:
+            raise ValueError("Snapshot text contains invalid Unicode.") from exc
         return
     if isinstance(value, list):
         if len(value) > 20000:

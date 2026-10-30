@@ -136,7 +136,7 @@ def build(portable, output):
             if icon[:8] != b"\x89PNG\r\n\x1a\n":
                 raise ValueError("Missing app icon.")
         copyright_text = ("DeviceScope application: Twoball.\n"
-                          "An application license has not been specified in the supplied sources.\n"
+                          "DeviceScope application code: MIT license. See /usr/share/doc/devicescope/LICENSE.\n"
                           "Bundled Python and native libraries retain their upstream licenses.\n"
                           "Notices: /opt/devicescope/app/third-party-licenses/ and\n"
                           "/opt/devicescope/python/lib/python3.13/LICENSE.txt\n").encode()
@@ -145,6 +145,7 @@ def build(portable, output):
             ("usr/share/applications/devicescope.desktop", DESKTOP, 0o644),
             ("usr/share/pixmaps/devicescope.png", icon, 0o644),
             ("usr/share/doc/devicescope/copyright", copyright_text, 0o644),
+            ("usr/share/doc/devicescope/LICENSE", Path(__file__).parent.parent.joinpath("LICENSE").read_bytes(), 0o644),
             ("usr/share/doc/devicescope/README.md", Path(__file__).with_name("DEBIAN.md").read_bytes(), 0o644),
         ]:
             info = tarfile.TarInfo("./" + path)

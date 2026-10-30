@@ -93,3 +93,6 @@ Display queries optionally use `x11-xserver-utils` on Debian/Pardus.
 ## Copy specifications update — 2026-10-29
 
 A Copy specifications button is available only in System Specifications. It copies the complete currently displayed report (all sections, rows, GPU entries, supported modes and collection notes), regardless of scroll position or selected text. It remains disabled before a successful capture and reports clipboard errors without claiming success. Collectors and hardware readings are unchanged. Native Tk tests intercept clipboard writes to preserve the user clipboard while checking the full text passed to the real clipboard API.
+
+
+DeviceScope application code is licensed under MIT; see LICENSE. Bundled runtime components retain their own licenses.

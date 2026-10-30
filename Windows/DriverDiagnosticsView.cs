@@ -40,7 +40,7 @@ namespace DeviceScope
 
         public DriverDiagnosticsView()
         {
-            Background = Color("#EDF2F8"); Content = BuildUi();
+            Background = Color("#D4D4D4"); Content = BuildUi();
             Loaded += (s, e) => LoadIfVisible();
             IsVisibleChanged += (s, e) =>
             {
@@ -83,13 +83,10 @@ namespace DeviceScope
             root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            summary.Margin = new Thickness(0, 0, 0, 10); summary.Foreground = Color("#53647A"); summary.FontSize = 13; summary.TextWrapping = TextWrapping.Wrap; Grid.SetRow(summary, 1); root.Children.Add(summary);
-            Grid toolbar = new Grid { Margin = new Thickness(0, 0, 0, 10) };
-            toolbar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            toolbar.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            toolbar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            summary.Margin = new Thickness(0, 0, 0, 5); summary.Foreground = Color("#555555"); summary.FontSize = 11; summary.TextWrapping = TextWrapping.Wrap; Grid.SetRow(summary, 1); root.Children.Add(summary);
+            WrapPanel toolbar = new WrapPanel { Margin = new Thickness(0, 0, 0, 5) };
             StackPanel buttons = new StackPanel { Orientation = Orientation.Horizontal };
-            problemsOnly.Foreground = Color("#18263B"); problemsOnly.VerticalAlignment = VerticalAlignment.Center; problemsOnly.Margin = new Thickness(12, 0, 12, 0);
+            problemsOnly.Foreground = Color("#000000"); problemsOnly.VerticalAlignment = VerticalAlignment.Center; problemsOnly.Margin = new Thickness(8, 0, 8, 0);
             problemsOnly.Checked += (s, e) => ApplyFilter(); problemsOnly.Unchecked += (s, e) => ApplyFilter();
             refresh.Content = "Inspect selected"; refresh.IsEnabled = false; UiTheme.StyleButton(refresh); refresh.Margin = new Thickness(7, 0, 0, 0);
             refresh.Click += async (s, e) => await RefreshSelected();
@@ -97,29 +94,29 @@ namespace DeviceScope
             refreshInventory.Click += (s, e) => { EventHandler handler = InventoryRefreshRequested; if (handler != null) { refreshInventory.IsEnabled = false; summary.Text = "Refreshing Windows device inventory..."; handler(this, EventArgs.Empty); } };
             buttons.Children.Add(refreshInventory); buttons.Children.Add(refresh); buttons.Children.Add(problemsOnly); toolbar.Children.Add(buttons);
             StackPanel searchPanel = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
-            searchPanel.Children.Add(new TextBlock { Text = "Search", Foreground = Color("#18263B"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0, 8, 0) });
-            search.Background = Brushes.White; search.Foreground = Brushes.Black; search.CaretBrush = Brushes.Black; search.Padding = new Thickness(9, 6, 9, 6); search.Width = 210; search.BorderBrush = Color("#DBE3EF");
+            searchPanel.Children.Add(new TextBlock { Text = "Search", Foreground = Color("#000000"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0, 8, 0) });
+            search.Background = Brushes.White; search.Foreground = Brushes.Black; search.CaretBrush = Brushes.Black; search.Padding = new Thickness(3, 2, 3, 2); search.Width = 140; search.BorderBrush = Color("#A0A0A0");
             search.ToolTip = "Search device name, hardware IDs, status, service, driver or error code";
             System.Windows.Automation.AutomationProperties.SetName(search, "Search driver diagnostics");
-            search.TextChanged += (s, e) => ApplyFilter(); searchPanel.Children.Add(search); Grid.SetColumn(searchPanel, 2); toolbar.Children.Add(searchPanel);
+            search.TextChanged += (s, e) => ApplyFilter(); searchPanel.Children.Add(search); toolbar.Children.Add(searchPanel);
             root.Children.Add(toolbar);
 
             Grid content = new Grid();
-            content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star), MinHeight = 100 });
+            content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star), MinHeight = 80 });
             content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(8) });
-            content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1.35, GridUnitType.Star), MinHeight = 150 });
+            content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1.35, GridUnitType.Star), MinHeight = 125 });
             ConfigureGrid(deviceGrid); deviceGrid.Columns.Add(Column("Device", "Name", 2)); deviceGrid.Columns.Add(Column("Device Type", "DeviceType", 1.25)); deviceGrid.Columns.Add(Column("Code", "ErrorCode", .5)); deviceGrid.Columns.Add(Column("Status", "Status", 1.2));
             deviceGrid.ItemsSource = rows; deviceGrid.SelectionChanged += (s, e) => SelectedChanged(); content.Children.Add(deviceGrid);
-            GridSplitter splitter = new GridSplitter { Height = 5, HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Center, Background = Color("#DBE3EF"), ResizeDirection = GridResizeDirection.Rows }; Grid.SetRow(splitter, 1); content.Children.Add(splitter);
+            GridSplitter splitter = new GridSplitter { Height = 5, HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Center, Background = Color("#A0A0A0"), ResizeDirection = GridResizeDirection.Rows }; Grid.SetRow(splitter, 1); content.Children.Add(splitter);
             Grid right = new Grid(); right.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); right.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            selected.TextWrapping = TextWrapping.Wrap; selected.Margin = new Thickness(2, 0, 0, 8); selected.FontWeight = FontWeights.SemiBold; right.Children.Add(selected);
-            TabControl sections = new TabControl { Background = Color("#EDF2F8"), BorderThickness = new Thickness(0), Padding = new Thickness(0, 8, 0, 0), Foreground = Color("#18263B") };
+            selected.TextWrapping = TextWrapping.Wrap; selected.Margin = new Thickness(2, 0, 0, 4); selected.FontWeight = FontWeights.SemiBold; right.Children.Add(selected);
+            TabControl sections = new TabControl { Background = Color("#D4D4D4"), BorderThickness = new Thickness(0), Padding = new Thickness(0, 4, 0, 0), Foreground = Color("#000000") };
             sections.Items.Add(Section("Diagnosis", diagnosis));
             sections.Items.Add(Section("Dependencies", BuildDependencies())); sections.Items.Add(Section("Device Events", BuildEvents()));
             Grid.SetRow(sections, 1); right.Children.Add(sections); Grid.SetRow(right, 2); content.Children.Add(right);
             Grid.SetRow(content, 2); root.Children.Add(content);
-            dependencyNote.Foreground = Color("#53647A"); eventNote.Foreground = Color("#53647A");
-            status.Foreground = Color("#53647A"); status.Margin = new Thickness(2, 9, 2, 0); status.TextWrapping = TextWrapping.Wrap; Grid.SetRow(status, 3); root.Children.Add(status);
+            dependencyNote.Foreground = Color("#555555"); eventNote.Foreground = Color("#555555");
+            status.Foreground = Color("#555555"); status.Margin = new Thickness(2, 5, 2, 0); status.TextWrapping = TextWrapping.Wrap; Grid.SetRow(status, 3); root.Children.Add(status);
             return root;
         }
 
@@ -135,8 +132,8 @@ namespace DeviceScope
             Grid grid = new Grid(); grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1.1, GridUnitType.Star) }); grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(.8, GridUnitType.Star) }); grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             ConfigureGrid(eventGrid); eventGrid.Columns.Add(Column("Time", "TimeText", 1.1)); eventGrid.Columns.Add(Column("ID", "EventId", .4)); eventGrid.Columns.Add(Column("Level", "Level", .6)); eventGrid.Columns.Add(Column("Provider", "Provider", 1.3)); eventGrid.ItemsSource = events;
             eventGrid.SelectionChanged += (s, e) => { DeviceEventRow row = eventGrid.SelectedItem as DeviceEventRow; eventDetails.Text = row == null ? "Select an event to view its recorded message." : row.TimeText + "  |  " + row.Provider + "  |  Event " + row.EventId + Environment.NewLine + "Log: " + row.Log + Environment.NewLine + Environment.NewLine + row.Message; };
-            grid.Children.Add(eventGrid); eventDetails.Margin = new Thickness(0, 8, 0, 0); Grid.SetRow(eventDetails, 1); grid.Children.Add(eventDetails);
-            eventNote.TextWrapping = TextWrapping.Wrap; eventNote.Margin = new Thickness(2, 8, 2, 0); ScrollViewer notes = new ScrollViewer { Content = eventNote, MaxHeight = 100, VerticalScrollBarVisibility = ScrollBarVisibility.Auto }; Grid.SetRow(notes, 2); grid.Children.Add(notes); return grid;
+            grid.Children.Add(eventGrid); eventDetails.Margin = new Thickness(0, 4, 0, 0); Grid.SetRow(eventDetails, 1); grid.Children.Add(eventDetails);
+            eventNote.TextWrapping = TextWrapping.Wrap; eventNote.Margin = new Thickness(2, 8, 2, 0); ScrollViewer notes = new ScrollViewer { Content = eventNote, MaxHeight = 65, VerticalScrollBarVisibility = ScrollBarVisibility.Auto }; Grid.SetRow(notes, 2); grid.Children.Add(notes); return grid;
         }
 
         private void ApplyFilter()
@@ -234,9 +231,9 @@ namespace DeviceScope
 
         public void Shutdown() { closed = true; CancelRead(); }
         private static string Display(string value) { return String.IsNullOrWhiteSpace(value) ? "Unavailable" : value; }
-        private static TabItem Section(string name, object content) { return new TabItem { Header = name, Content = content, Padding = new Thickness(12, 7, 12, 7) }; }
-        private static TextBox ReadOnlyText() { return new TextBox { IsReadOnly = true, AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Background = Brushes.White, Foreground = Brushes.Black, CaretBrush = Brushes.Black, FontSize = 13, Padding = new Thickness(12), BorderBrush = Color("#DBE3EF") }; }
-        private static TextBlock Label(string value, double size) { return new TextBlock { Text = value, FontSize = size, Foreground = Color("#18263B") }; }
+        private static TabItem Section(string name, object content) { return new TabItem { Header = name, Content = content, Padding = new Thickness(8, 3, 8, 3) }; }
+        private static TextBox ReadOnlyText() { return new TextBox { IsReadOnly = true, AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Background = Brushes.White, Foreground = Brushes.Black, CaretBrush = Brushes.Black, FontSize = 11, Padding = new Thickness(5), BorderBrush = Color("#A0A0A0") }; }
+        private static TextBlock Label(string value, double size) { return new TextBlock { Text = value, FontSize = 11, Foreground = Color("#000000") }; }
         private static SolidColorBrush Color(string value) { SolidColorBrush brush = (SolidColorBrush)new BrushConverter().ConvertFromString(value); brush.Freeze(); return brush; }
         private static void ConfigureGrid(DataGrid grid)
         {
@@ -244,7 +241,7 @@ namespace DeviceScope
         }
         private static DataGridTextColumn Column(string title, string property, double width)
         {
-            Style text = new Style(typeof(TextBlock)); text.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap)); text.Setters.Add(new Setter(FrameworkElement.MarginProperty, new Thickness(6)));
+            Style text = new Style(typeof(TextBlock)); text.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap)); text.Setters.Add(new Setter(FrameworkElement.MarginProperty, new Thickness(4, 2, 4, 2)));
             return new DataGridTextColumn { Header = title, Binding = new Binding(property) { TargetNullValue = "Unavailable" }, SortMemberPath = property, Width = new DataGridLength(width, DataGridLengthUnitType.Star), MinWidth = title == "Device Type" ? 110 : title == "Code" ? 45 : 20, ElementStyle = text };
         }
     }

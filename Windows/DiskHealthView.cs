@@ -28,7 +28,7 @@ namespace DeviceScope
 
         public DiskHealthView()
         {
-            Background = Color("#EDF2F8"); Content = BuildUi();
+            Background = Color("#D4D4D4"); Content = BuildUi();
             timer.Interval = TimeSpan.FromSeconds(30); timer.Tick += (s, e) => Refresh();
             Loaded += (s, e) => UpdateTimer(); IsVisibleChanged += (s, e) => UpdateTimer(); Unloaded += (s, e) => timer.Stop();
         }
@@ -38,34 +38,34 @@ namespace DeviceScope
             Grid root = new Grid();
             root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }); root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            summary.Text = "Storage health, reliability counters and volume space"; summary.FontSize = 15; summary.Foreground = Color("#18263B"); summary.TextWrapping = TextWrapping.Wrap; summary.Margin = new Thickness(0, 0, 0, 9); root.Children.Add(summary);
+            summary.Text = "Storage health, reliability counters and volume space"; summary.FontSize = 11; summary.Foreground = Color("#000000"); summary.TextWrapping = TextWrapping.Wrap; summary.Margin = new Thickness(0, 0, 0, 5); root.Children.Add(summary);
 
-            DockPanel toolbar = new DockPanel { LastChildFill = true, Margin = new Thickness(0, 0, 0, 10) };
+            DockPanel toolbar = new DockPanel { LastChildFill = true, Margin = new Thickness(0, 0, 0, 5) };
             StackPanel actions = new StackPanel { Orientation = Orientation.Horizontal };
-            automatic.Content = "Auto-refresh (30 sec)"; automatic.IsChecked = false; automatic.Foreground = Color("#18263B"); automatic.VerticalAlignment = VerticalAlignment.Center; automatic.Margin = new Thickness(14, 0, 14, 0);
+            automatic.Content = "Auto-refresh (30 sec)"; automatic.IsChecked = false; automatic.Foreground = Color("#000000"); automatic.VerticalAlignment = VerticalAlignment.Center; automatic.Margin = new Thickness(8, 0, 8, 0);
             automatic.Checked += (s, e) => UpdateTimer(); automatic.Unchecked += (s, e) => UpdateTimer();
             refresh.Content = "Refresh storage"; UiTheme.StyleButton(refresh); refresh.Click += (s, e) => Refresh();
             actions.Children.Add(refresh); actions.Children.Add(automatic); DockPanel.SetDock(actions, Dock.Left); toolbar.Children.Add(actions);
-            TextBlock hint = new TextBlock { Text = "Read-only. Health and temperatures depend on the device and its driver.", Foreground = Color("#53647A"), TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center }; toolbar.Children.Add(hint);
+            TextBlock hint = new TextBlock { Text = "Read-only. Health and temperatures depend on the device and its driver.", Foreground = Color("#555555"), TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center }; toolbar.Children.Add(hint);
             Grid.SetRow(toolbar, 1); root.Children.Add(toolbar);
 
-            TabControl sections = new TabControl { Background = Color("#EDF2F8"), BorderThickness = new Thickness(0), Padding = new Thickness(0, 8, 0, 0) };
+            TabControl sections = new TabControl { Background = Color("#D4D4D4"), BorderThickness = new Thickness(0), Padding = new Thickness(0, 4, 0, 0) };
             sections.Items.Add(new TabItem { Header = "Physical disks", Content = BuildPhysical() });
             sections.Items.Add(new TabItem { Header = "Volume space", Content = BuildVolumes() });
             sections.Items.Add(new TabItem { Header = "ATA SMART / raw data", Content = BuildSmart() });
             Grid.SetRow(sections, 2); root.Children.Add(sections);
-            status.Text = "Select Disk Health to read the available providers."; status.Foreground = Color("#53647A"); status.TextWrapping = TextWrapping.Wrap; status.Margin = new Thickness(0, 10, 0, 0); status.FontSize = 12;
-            ScrollViewer footer = new ScrollViewer { Content = status, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, MaxHeight = 115 }; Grid.SetRow(footer, 3); root.Children.Add(footer);
+            status.Text = "Select Disk Health to read the available providers."; status.Foreground = Color("#555555"); status.TextWrapping = TextWrapping.Wrap; status.Margin = new Thickness(0, 5, 0, 0); status.FontSize = 11;
+            ScrollViewer footer = new ScrollViewer { Content = status, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, MaxHeight = 65 }; Grid.SetRow(footer, 3); root.Children.Add(footer);
             return root;
         }
 
         private UIElement BuildPhysical()
         {
-            Grid root = new Grid(); root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1.1, GridUnitType.Star), MinHeight = 100 }); root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(8) }); root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star), MinHeight = 100 });
+            Grid root = new Grid(); root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1.1, GridUnitType.Star), MinHeight = 80 }); root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(8) }); root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star), MinHeight = 80 });
             Configure(disks); disks.SelectionMode = DataGridSelectionMode.Single;
             disks.Columns.Add(Column("Disk", "Name", 1.8)); disks.Columns.Add(Column("Type", "MediaType", .65)); disks.Columns.Add(Column("Capacity", "Capacity", .7)); disks.Columns.Add(Column("Windows health", "Health", 1.2)); disks.Columns.Add(Column("Temperature", "Temperature", 1));
             disks.SelectionChanged += (s, e) => { PhysicalDiskHealth row = disks.SelectedItem as PhysicalDiskHealth; diskDetails.ItemsSource = row == null ? null : row.Details; }; root.Children.Add(disks);
-            GridSplitter splitter = new GridSplitter { Height = 4, Background = Color("#DBE3EF"), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Center, ResizeDirection = GridResizeDirection.Rows }; Grid.SetRow(splitter, 1); root.Children.Add(splitter);
+            GridSplitter splitter = new GridSplitter { Height = 4, Background = Color("#A0A0A0"), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Center, ResizeDirection = GridResizeDirection.Rows }; Grid.SetRow(splitter, 1); root.Children.Add(splitter);
             Configure(diskDetails); diskDetails.Columns.Add(Column("Property", "Label", .85)); diskDetails.Columns.Add(Column("Reported value", "Value", 1.35)); Grid.SetRow(diskDetails, 2); root.Children.Add(diskDetails);
             return root;
         }
@@ -73,10 +73,10 @@ namespace DeviceScope
         private UIElement BuildVolumes()
         {
             Grid root = new Grid(); root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            TextBlock note = new TextBlock { Text = "Logical local volumes: used/free filesystem space. These are not guessed to correspond one-to-one to physical disks.", Foreground = Color("#53647A"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 9) }; root.Children.Add(note);
+            TextBlock note = new TextBlock { Text = "Logical local volumes: used/free filesystem space. These are not guessed to correspond one-to-one to physical disks.", Foreground = Color("#555555"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 5) }; root.Children.Add(note);
             Configure(volumes); volumes.Columns.Add(Column("Volume", "Name", .6)); volumes.Columns.Add(Column("Filesystem", "FileSystem", .65)); volumes.Columns.Add(Column("Total", "Total", .8)); volumes.Columns.Add(Column("Free", "Free", .8)); volumes.Columns.Add(Column("Used", "Used", 1.2));
             FrameworkElementFactory bar = new FrameworkElementFactory(typeof(ProgressBar)); bar.SetValue(ProgressBar.MaximumProperty, 100.0); bar.SetValue(FrameworkElement.HeightProperty, 14.0); bar.SetValue(FrameworkElement.MarginProperty, new Thickness(8)); bar.SetBinding(ProgressBar.ValueProperty, new Binding("UsedPercent")); bar.SetBinding(FrameworkElement.ToolTipProperty, new Binding("Used"));
-            bar.SetValue(Control.ForegroundProperty, Color("#2563EB")); bar.SetValue(Control.BackgroundProperty, Color("#DFE8F5"));
+            bar.SetValue(Control.ForegroundProperty, Color("#245EDB")); bar.SetValue(Control.BackgroundProperty, Color("#EFEFEF"));
             Style visible = new Style(typeof(ProgressBar)); DataTrigger unavailable = new DataTrigger { Binding = new Binding("HasUsage"), Value = false }; unavailable.Setters.Add(new Setter(UIElement.VisibilityProperty, Visibility.Collapsed)); visible.Triggers.Add(unavailable); bar.SetValue(FrameworkElement.StyleProperty, visible);
             volumes.Columns.Add(new DataGridTemplateColumn { Header = "Space used", CellTemplate = new DataTemplate { VisualTree = bar }, Width = new DataGridLength(1, DataGridLengthUnitType.Star) }); volumes.Columns.Add(Column("Status", "Status", 1)); Grid.SetRow(volumes, 1); root.Children.Add(volumes); return root;
         }
@@ -84,11 +84,11 @@ namespace DeviceScope
         private UIElement BuildSmart()
         {
             Grid root = new Grid(); root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }); root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            smartInstances.Background = Brushes.White; smartInstances.Foreground = Brushes.Black; smartInstances.MinHeight = 30; smartInstances.Margin = new Thickness(0, 0, 0, 8); smartInstances.DisplayMemberPath = "InstanceName"; smartInstances.SelectionChanged += (s, e) => ShowSmart(); root.Children.Add(smartInstances);
-            smartSummary.Text = "No SMART provider instance selected."; smartSummary.Foreground = Color("#18263B"); smartSummary.TextWrapping = TextWrapping.Wrap; smartSummary.Margin = new Thickness(0, 0, 0, 9); Grid.SetRow(smartSummary, 1); root.Children.Add(smartSummary);
+            smartInstances.Background = Brushes.White; smartInstances.Foreground = Brushes.Black; smartInstances.MinHeight = 22; smartInstances.Margin = new Thickness(0, 0, 0, 8); smartInstances.DisplayMemberPath = "InstanceName"; smartInstances.SelectionChanged += (s, e) => ShowSmart(); root.Children.Add(smartInstances);
+            smartSummary.Text = "No SMART provider instance selected."; smartSummary.Foreground = Color("#000000"); smartSummary.TextWrapping = TextWrapping.Wrap; smartSummary.Margin = new Thickness(0, 0, 0, 5); Grid.SetRow(smartSummary, 1); root.Children.Add(smartSummary);
             Configure(smart); smart.Columns.Add(Column("Attribute", "Attribute", 1.5)); smart.Columns.Add(Column("Current", "Current", .65)); smart.Columns.Add(Column("Worst", "Worst", .65)); smart.Columns.Add(Column("Threshold", "Threshold", .8)); smart.Columns.Add(Column("Raw bytes (hex)", "RawHex", 1.15)); DataGridTextColumn rawNumber = Column("Raw unsigned value", "RawDecimal", 1); rawNumber.SortMemberPath = "RawValue"; smart.Columns.Add(rawNumber); Grid.SetRow(smart, 2); root.Children.Add(smart);
-            rawPayload.IsReadOnly = true; rawPayload.Background = Brushes.White; rawPayload.Foreground = Brushes.Black; rawPayload.BorderBrush = Color("#DBE3EF"); rawPayload.FontFamily = new FontFamily("Consolas"); rawPayload.TextWrapping = TextWrapping.Wrap; rawPayload.VerticalScrollBarVisibility = ScrollBarVisibility.Auto; rawPayload.Height = 120; rawPayload.Padding = new Thickness(8);
-            Expander raw = new Expander { Header = "Uninterpreted provider bytes", Content = rawPayload, Foreground = Color("#18263B"), Margin = new Thickness(0, 8, 0, 0) }; Grid.SetRow(raw, 3); root.Children.Add(raw); return root;
+            rawPayload.IsReadOnly = true; rawPayload.Background = Brushes.White; rawPayload.Foreground = Brushes.Black; rawPayload.BorderBrush = Color("#A0A0A0"); rawPayload.FontFamily = new FontFamily("Consolas"); rawPayload.TextWrapping = TextWrapping.Wrap; rawPayload.VerticalScrollBarVisibility = ScrollBarVisibility.Auto; rawPayload.Height = 80; rawPayload.Padding = new Thickness(4);
+            Expander raw = new Expander { Header = "Uninterpreted provider bytes", Content = rawPayload, Foreground = Color("#000000"), Margin = new Thickness(0, 4, 0, 0) }; Grid.SetRow(raw, 3); root.Children.Add(raw); return root;
         }
 
         private void ShowSmart()
@@ -128,7 +128,7 @@ namespace DeviceScope
         private static void Configure(DataGrid grid) { UiTheme.ConfigureGrid(grid); }
         private static DataGridTextColumn Column(string title, string path, double width)
         {
-            Style text = new Style(typeof(TextBlock)); text.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap)); text.Setters.Add(new Setter(FrameworkElement.MarginProperty, new Thickness(6)));
+            Style text = new Style(typeof(TextBlock)); text.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap)); text.Setters.Add(new Setter(FrameworkElement.MarginProperty, new Thickness(4, 2, 4, 2)));
             return new DataGridTextColumn { Header = title, Binding = new Binding(path), SortMemberPath = path, Width = new DataGridLength(width, DataGridLengthUnitType.Star), ElementStyle = text };
         }
         private static SolidColorBrush Color(string hex) { return UiTheme.Brush(hex); }

@@ -16,3 +16,6 @@ The Python Build Standalone project distributes components under their respectiv
 The computer/magnifier image was provided by the project owner and is copied unchanged.
 
 No Blueman, BlueZ, NVIDIA driver, smartmontools, kernel module or sensor driver is bundled. When present, optional system utilities are called read-only using argument lists, never a shell command string.
+
+
+DeviceScope application code is MIT-licensed. Its notice is included as app/LICENSE in the portable payload. This does not replace any dependency license.

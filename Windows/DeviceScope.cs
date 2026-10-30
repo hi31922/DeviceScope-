@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -55,11 +55,26 @@ namespace DeviceScope
 
         public MainWindow()
         {
-            Title = "DeviceScope 0.8 | Windows";
-            Width = 1040; Height = 720; MinWidth = 840; MinHeight = 620;
+            Title = "System Information";
+            Width = 700; Height = 580; MinWidth = 700; MinHeight = 580;
+            SourceInitialized += (s, e) =>
+            {
+                // WPF dimensions are logical units. Keep the requested initial
+                // outer size in physical pixels on scaled Windows desktops.
+                PresentationSource source = PresentationSource.FromVisual(this);
+                if (source != null && source.CompositionTarget != null)
+                {
+                    Matrix scale = source.CompositionTarget.TransformToDevice;
+                    if (scale.M11 > 0 && scale.M22 > 0)
+                    {
+                        MinWidth = 700 / scale.M11; MinHeight = 580 / scale.M22;
+                        Width = MinWidth; Height = MinHeight;
+                    }
+                }
+            };
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            FontFamily = new FontFamily("Segoe UI");
-            FontSize = 13; Foreground = Color("#18263B"); Background = Color("#EDF2F8");
+            FontFamily = new FontFamily("Tahoma");
+            FontSize = 11; Foreground = Color("#000000"); Background = Color("#D4D4D4");
             UiTheme.ApplyResources(this);
             using (Stream artwork = typeof(App).Assembly.GetManifestResourceStream("DeviceScope.Icon.ico"))
             {
@@ -77,32 +92,15 @@ namespace DeviceScope
 
         private UIElement BuildUi()
         {
-            Grid root = new Grid { Background = Color("#EDF2F8") };
-            root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            Grid brand = new Grid { Background = Color("#10213A") };
-            brand.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            brand.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            TextBlock name = Text("DeviceScope", 29, "#FFFFFF", FontWeights.Bold);
-            name.Margin = new Thickness(24, 17, 0, 17); brand.Children.Add(name);
-            StackPanel heading = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(20, 0, 0, 0) };
-            heading.Children.Add(Text("WINDOWS  /  0.8", 13, "#9FC4FF", FontWeights.SemiBold));
-            Grid.SetColumn(heading, 1); brand.Children.Add(heading);
-            TextBlock tagline = Text("Know what your computer is running.", 13, "#BDCBE1", FontWeights.Normal);
-            tagline.HorizontalAlignment = HorizontalAlignment.Right; tagline.VerticalAlignment = VerticalAlignment.Center; tagline.Margin = new Thickness(0, 0, 24, 0);
-            Grid.SetColumn(tagline, 1); brand.Children.Add(tagline); root.Children.Add(brand);
-
-            TabControl tabs = new TabControl { Background = Color("#EDF2F8"), Margin = new Thickness(16, 15, 16, 0), Padding = new Thickness(12, 15, 12, 4) };
+            Grid root = new Grid { Background = Color("#D4D4D4") };
+            TabControl tabs = new TabControl { Background = Color("#D4D4D4"), Margin = new Thickness(8), Padding = new Thickness(8) };
             tabs.Items.Add(new TabItem { Header = "Devices & Drivers", Content = BuildDevices() });
             tabs.Items.Add(new TabItem { Header = "Processes & RAM", Content = processesView });
             tabs.Items.Add(new TabItem { Header = "Driver Diagnostics", Content = driverDiagnosticsView });
             tabs.Items.Add(new TabItem { Header = "Live Performance", Content = performanceView });
             tabs.Items.Add(new TabItem { Header = "Disk Health", Content = diskHealthView });
             tabs.Items.Add(new TabItem { Header = "System Specifications", Content = systemSpecificationsView });
-            Grid.SetRow(tabs, 1); root.Children.Add(tabs);
-            TextBlock local = Text("Local data only. Hardware inventory, diagnostics and live system measurements.", 12, "#53647A", FontWeights.Normal);
-            local.Margin = new Thickness(28, 8, 28, 12); Grid.SetRow(local, 2); root.Children.Add(local);
+            root.Children.Add(tabs);
             return root;
         }
 
@@ -114,7 +112,9 @@ namespace DeviceScope
             root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-            Grid toolbar = new Grid { Margin = new Thickness(0, 0, 0, 12) };
+            Grid toolbar = new Grid { Margin = new Thickness(0, 0, 0, 6) };
+            toolbar.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            toolbar.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             toolbar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             toolbar.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             toolbar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -123,21 +123,21 @@ namespace DeviceScope
             buttons.Children.Add(ActionButton("Export snapshot", (s, e) => ExportJson()));
             buttons.Children.Add(ActionButton("Compare snapshot", (s, e) => CompareSnapshot()));
             toolbar.Children.Add(buttons);
-            search.MinHeight = 35; search.Width = 235; search.Padding = new Thickness(9, 6, 9, 6);
+            search.MinHeight = 23; search.Width = 260; search.Padding = new Thickness(3, 2, 3, 2);
             search.Background = Brushes.White; search.Foreground = Brushes.Black; search.CaretBrush = Brushes.Black;
-            search.BorderBrush = Color("#CBD8E9"); search.Margin = new Thickness(0);
+            search.BorderBrush = Color("#7F9DB9"); search.Margin = new Thickness(0);
             search.ToolTip = "Search device, manufacturer, hardware ID, driver or status";
             System.Windows.Automation.AutomationProperties.SetName(search, "Search devices");
             search.TextChanged += (s, e) => ApplyFilters();
             StackPanel searchPanel = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
-            TextBlock searchLabel = Text("Search", 13, "#18263B", FontWeights.Normal); searchLabel.VerticalAlignment = VerticalAlignment.Center; searchLabel.Margin = new Thickness(12, 0, 8, 0);
-            searchPanel.Children.Add(searchLabel); searchPanel.Children.Add(search); Grid.SetColumn(searchPanel, 2); toolbar.Children.Add(searchPanel);
+            TextBlock searchLabel = Text("Search", 11, "#000000", FontWeights.Normal); searchLabel.VerticalAlignment = VerticalAlignment.Center; searchLabel.Margin = new Thickness(0, 0, 6, 0);
+            searchPanel.Children.Add(searchLabel); searchPanel.Children.Add(search); Grid.SetColumnSpan(searchPanel, 3); Grid.SetRow(searchPanel, 1); searchPanel.Margin = new Thickness(0, 5, 0, 0); toolbar.Children.Add(searchPanel);
             root.Children.Add(toolbar);
 
-            Grid filters = new Grid { Margin = new Thickness(0, 0, 0, 10) };
+            Grid filters = new Grid { Margin = new Thickness(0, 0, 0, 6) };
             filters.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             filters.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            StackPanel left = new StackPanel { Orientation = Orientation.Horizontal };
+            WrapPanel left = new WrapPanel { Orientation = Orientation.Horizontal };
             category.Width = 156; category.Background = Brushes.White; category.Foreground = Brushes.Black; category.Margin = new Thickness(0, 0, 16, 0);
             category.Items.Add("All categories"); category.SelectedIndex = 0;
             category.SelectionChanged += (s, e) => { if (!changingFilters) ApplyFilters(); };
@@ -145,22 +145,22 @@ namespace DeviceScope
             left.Children.Add(category);
             foreach (CheckBox check in new[] { problemsOnly, changesOnly })
             {
-                check.Foreground = Color("#18263B"); check.VerticalAlignment = VerticalAlignment.Center; check.Margin = new Thickness(0, 0, 16, 0);
+                check.Foreground = Color("#000000"); check.VerticalAlignment = VerticalAlignment.Center; check.Margin = new Thickness(0, 0, 16, 0);
                 check.Checked += (s, e) => ApplyFilters(); check.Unchecked += (s, e) => ApplyFilters(); left.Children.Add(check);
             }
             filters.Children.Add(left);
-            visibleCount.Foreground = Color("#53647A"); visibleCount.VerticalAlignment = VerticalAlignment.Center;
+            visibleCount.Foreground = Color("#555555"); visibleCount.VerticalAlignment = VerticalAlignment.Center;
             Grid.SetColumn(visibleCount, 1); filters.Children.Add(visibleCount);
             Grid.SetRow(filters, 1); root.Children.Add(filters);
 
             Grid content = new Grid();
-            content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(3, GridUnitType.Star), MinHeight = 135 });
-            content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(12) });
-            content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(2, GridUnitType.Star), MinHeight = 125 });
+            content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(3, GridUnitType.Star), MinHeight = 90 });
+            content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(8) });
+            content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(2, GridUnitType.Star), MinHeight = 90 });
             Grid.SetRow(content, 2); root.Children.Add(content);
 
             Grid list = new Grid(); list.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); list.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            summary.Text = "Ready to scan devices"; summary.Foreground = Color("#53647A"); summary.TextWrapping = TextWrapping.Wrap; summary.Margin = new Thickness(0, 0, 0, 9); list.Children.Add(summary);
+            summary.Text = "Ready to scan devices"; summary.Foreground = Color("#555555"); summary.TextWrapping = TextWrapping.Wrap; summary.Margin = new Thickness(0, 0, 0, 9); list.Children.Add(summary);
             ConfigureGrid(deviceGrid);
             deviceGrid.SelectionMode = DataGridSelectionMode.Single;
             deviceGrid.Columns.Add(Column("Device", "Name", 2.1));
@@ -172,16 +172,16 @@ namespace DeviceScope
             deviceGrid.ItemsSource = devices; deviceGrid.SelectionChanged += (s, e) => ShowDetails(deviceGrid.SelectedItem as DeviceRow);
             Grid.SetRow(deviceGrid, 1); list.Children.Add(deviceGrid); content.Children.Add(list);
 
-            GridSplitter splitter = new GridSplitter { Height = 4, HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Center, Background = Color("#DBE3EF"), ResizeDirection = GridResizeDirection.Rows }; Grid.SetRow(splitter, 1); content.Children.Add(splitter);
+            GridSplitter splitter = new GridSplitter { Height = 4, HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Center, Background = Color("#B0B0B0"), ResizeDirection = GridResizeDirection.Rows }; Grid.SetRow(splitter, 1); content.Children.Add(splitter);
             Grid detail = new Grid(); detail.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto }); detail.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            selected.Text = "Select a device"; selected.Foreground = Color("#18263B"); selected.FontSize = 15; selected.FontWeight = FontWeights.SemiBold; selected.TextWrapping = TextWrapping.Wrap; selected.Margin = new Thickness(4, 0, 0, 9);
+            selected.Text = "Select a device"; selected.Foreground = Color("#000000"); selected.FontSize = 11; selected.FontWeight = FontWeights.SemiBold; selected.TextWrapping = TextWrapping.Wrap; selected.Margin = new Thickness(4, 0, 0, 9);
             detail.Children.Add(selected); ConfigureGrid(detailGrid);
             detailGrid.Columns.Add(Column("Property", "Label", .8)); detailGrid.Columns.Add(Column("Value", "Value", 1.6)); detailGrid.ItemsSource = details;
             Grid.SetRow(detailGrid, 1); detail.Children.Add(detailGrid); Grid.SetRow(detail, 2); content.Children.Add(detail);
 
-            footer.Foreground = Color("#53647A"); footer.FontSize = 12; footer.Margin = new Thickness(2, 8, 2, 0); footer.TextWrapping = TextWrapping.Wrap;
+            footer.Foreground = Color("#555555"); footer.FontSize = 11; footer.Margin = new Thickness(2, 8, 2, 0); footer.TextWrapping = TextWrapping.Wrap;
             footer.Text = "Local, read-only inventory.";
-            ScrollViewer messages = new ScrollViewer { Content = footer, MaxHeight = 78, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
+            ScrollViewer messages = new ScrollViewer { Content = footer, MaxHeight = 40, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
             Grid.SetRow(messages, 3); root.Children.Add(messages);
             return root;
         }
@@ -193,8 +193,8 @@ namespace DeviceScope
 
         private static DataGridTextColumn Column(string title, string path, double width)
         {
-            Style text = new Style(typeof(TextBlock)); text.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap)); text.Setters.Add(new Setter(FrameworkElement.MarginProperty, new Thickness(7, 6, 7, 6)));
-            return new DataGridTextColumn { Header = title, Binding = new Binding(path), SortMemberPath = path, Width = new DataGridLength(width, DataGridLengthUnitType.Star), MinWidth = title == "Device Type" ? 110 : 20, ElementStyle = text };
+            Style text = new Style(typeof(TextBlock)); text.Setters.Add(new Setter(TextBlock.TextWrappingProperty, path == "Value" ? TextWrapping.Wrap : TextWrapping.NoWrap)); text.Setters.Add(new Setter(TextBlock.TextTrimmingProperty, TextTrimming.CharacterEllipsis)); text.Setters.Add(new Setter(FrameworkElement.ToolTipProperty, new Binding(path))); text.Setters.Add(new Setter(FrameworkElement.MarginProperty, new Thickness(4, 3, 4, 3)));
+            return new DataGridTextColumn { Header = title, Binding = new Binding(path), SortMemberPath = path, Width = new DataGridLength(width, DataGridLengthUnitType.Star), MinWidth = title == "Device Type" ? 110 : Math.Max(55, title.Length * 6 + 18), ElementStyle = text };
         }
 
         private async Task RefreshDevices()

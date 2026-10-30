@@ -79,3 +79,6 @@ https://belge.pardus.org.tr/pages/viewpage.action?pageId=10028699
 System Specifications adds a sixth tab for OS/CPU/GPU/RAM/motherboard/firmware/storage/display records. Optional tools for extra data: `dmidecode` and `x11-xserver-utils`. Missing firmware permissions or driver/Wayland data stays unavailable; no elevation or estimates are used.
 
 Copy specifications is available in the System Specifications tab and copies its entire loaded report, including notes and rows outside the visible area.
+
+
+DeviceScope application code is licensed under MIT. The complete notice is installed at /usr/share/doc/devicescope/LICENSE; dependency notices retain their original terms.

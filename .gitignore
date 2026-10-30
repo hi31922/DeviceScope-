@@ -7,6 +7,8 @@
 *.run.sha256
 *.deb
 *.deb.sha256
+*.zip
+*.zip.sha256
 
 # Build/runtime caches and editor files.
 __pycache__/

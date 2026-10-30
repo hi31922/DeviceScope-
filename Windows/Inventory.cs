@@ -178,8 +178,63 @@ namespace DeviceScope
         {
             Validate(report);
             string json = Serializer().Serialize(report);
-            if (Encoding.UTF8.GetByteCount(json) > MaximumBytes) throw new InvalidDataException("Snapshot exceeds the 16 MB limit.");
-            File.WriteAllText(path, json, new UTF8Encoding(false));
+            byte[] data = new UTF8Encoding(false).GetBytes(json);
+            if (data.Length > MaximumBytes) throw new InvalidDataException("Snapshot exceeds the 16 MB limit.");
+            string target = Path.GetFullPath(path);
+            string temporary = Path.Combine(Path.GetDirectoryName(target), ".devicescope-" + Guid.NewGuid().ToString("N") + ".tmp");
+            string backup = null;
+            bool committed = false;
+            try
+            {
+                // Write beside the destination and commit only after a complete,
+                // flushed write, so an I/O failure cannot truncate an older export.
+                using (FileStream stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                {
+                    stream.Write(data, 0, data.Length);
+                    stream.Flush(true);
+                }
+                if (File.Exists(target))
+                {
+                    backup = Path.Combine(Path.GetDirectoryName(target), ".devicescope-backup-" + Guid.NewGuid().ToString("N") + ".tmp");
+                    try { File.Replace(temporary, target, backup); }
+                    catch (Exception failure)
+                    {
+                        // ReplaceFile can fail after renaming the old destination.
+                        // Restore it if possible; never discard its recovery copy.
+                        if (File.Exists(backup) && !File.Exists(target))
+                        {
+                            try { File.Move(backup, target); backup = null; }
+                            catch (IOException) { throw new IOException("Snapshot export failed. The previous snapshot was kept at: " + backup, failure); }
+                            catch (UnauthorizedAccessException) { throw new IOException("Snapshot export failed. The previous snapshot was kept at: " + backup, failure); }
+                        }
+                        if (!File.Exists(target) && File.Exists(temporary))
+                        {
+                            string recovery = temporary; temporary = null;
+                            throw new IOException("Snapshot export failed. A completed recovery export was kept at: " + recovery, failure);
+                        }
+                        if (backup != null && File.Exists(backup))
+                            throw new IOException("Snapshot export failed. The previous snapshot was kept at: " + backup, failure);
+                        throw;
+                    }
+                }
+                else File.Move(temporary, target);
+                temporary = null; committed = true;
+            }
+            finally
+            {
+                if (temporary != null)
+                {
+                    try { File.Delete(temporary); }
+                    catch (IOException) { }
+                    catch (UnauthorizedAccessException) { }
+                }
+                if (committed && backup != null)
+                {
+                    try { File.Delete(backup); }
+                    catch (IOException) { }
+                    catch (UnauthorizedAccessException) { }
+                }
+            }
         }
         public static SnapshotReport Load(string path)
         {

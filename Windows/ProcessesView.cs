@@ -136,7 +136,7 @@ namespace DeviceScope
 
         public ProcessesView()
         {
-            Background = Color("#EDF2F8");
+            Background = Color("#D4D4D4");
             view = CollectionViewSource.GetDefaultView(rows);
             view.Filter = MatchesSearch;
             view.SortDescriptions.Add(new SortDescription("WorkingSetBytes", ListSortDirection.Descending));
@@ -158,45 +158,42 @@ namespace DeviceScope
             root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-            summary.Foreground = Color("#53647A"); summary.FontSize = 13; summary.Margin = new Thickness(0, 0, 0, 10);
+            summary.Foreground = Color("#555555"); summary.FontSize = 11; summary.Margin = new Thickness(0, 0, 0, 5);
             summary.Text = "Select this tab to inspect running processes and memory.";
             summary.TextWrapping = TextWrapping.Wrap; Grid.SetRow(summary, 1); root.Children.Add(summary);
 
-            Grid actions = new Grid { Margin = new Thickness(0, 0, 0, 10) };
-            actions.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            actions.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            actions.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            WrapPanel actions = new WrapPanel { Margin = new Thickness(0, 0, 0, 5) };
             StackPanel controls = new StackPanel { Orientation = Orientation.Horizontal };
-            automatic.Content = "Refresh every 3 seconds"; automatic.Foreground = Color("#18263B");
-            automatic.IsChecked = true; automatic.VerticalAlignment = VerticalAlignment.Center; automatic.Margin = new Thickness(12, 0, 12, 0);
+            automatic.Content = "Refresh every 3 seconds"; automatic.Foreground = Color("#000000");
+            automatic.IsChecked = true; automatic.VerticalAlignment = VerticalAlignment.Center; automatic.Margin = new Thickness(8, 0, 8, 0);
             automatic.Checked += (s, e) => UpdateTimer(); automatic.Unchecked += (s, e) => UpdateTimer();
             refresh.Content = "Refresh processes"; UiTheme.StyleButton(refresh); refresh.Click += (s, e) => RefreshProcesses();
             controls.Children.Add(refresh); controls.Children.Add(automatic); actions.Children.Add(controls);
             StackPanel searchPanel = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
-            searchPanel.Children.Add(new TextBlock { Text = "Search", Foreground = Color("#18263B"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0, 8, 0) });
+            searchPanel.Children.Add(new TextBlock { Text = "Search", Foreground = Color("#000000"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0, 8, 0) });
             search.Background = Brushes.White; search.Foreground = Brushes.Black; search.CaretBrush = Brushes.Black;
-            search.BorderBrush = Color("#DBE3EF"); search.Padding = new Thickness(10, 6, 10, 6); search.Width = 230;
+            search.BorderBrush = Color("#A0A0A0"); search.Padding = new Thickness(3, 2, 3, 2); search.Width = 145;
             search.ToolTip = "Search process name, PID, type or window title";
             search.TextChanged += (s, e) => { view.Refresh(); UpdateSelection(); };
-            searchPanel.Children.Add(search); Grid.SetColumn(searchPanel, 2); actions.Children.Add(searchPanel); root.Children.Add(actions);
+            searchPanel.Children.Add(search); actions.Children.Add(searchPanel); root.Children.Add(actions);
 
             ConfigureGrid(); Grid.SetRow(grid, 2); root.Children.Add(grid);
             DockPanel selectedPanel = new DockPanel { LastChildFill = true };
             stop.Content = "Stop Process"; UiTheme.StyleButton(stop);
-            stop.Padding = new Thickness(14, 8, 14, 8); stop.Margin = new Thickness(12, 10, 0, 0);
+            stop.Padding = new Thickness(8, 3, 8, 3); stop.Margin = new Thickness(8, 5, 0, 0);
             stop.VerticalAlignment = VerticalAlignment.Top; stop.Visibility = Visibility.Collapsed;
             stop.Click += (s, e) => StopSelectedProcess();
             DockPanel.SetDock(stop, Dock.Right); selectedPanel.Children.Add(stop);
-            selection.Foreground = Color("#18263B"); selection.TextWrapping = TextWrapping.Wrap;
-            selection.Margin = new Thickness(0, 10, 0, 0); selection.Text = "Select a process for its memory details.";
+            selection.Foreground = Color("#000000"); selection.TextWrapping = TextWrapping.Wrap;
+            selection.Margin = new Thickness(0, 5, 0, 0); selection.Text = "Select a process for its memory details.";
             selectedPanel.Children.Add(selection); Grid.SetRow(selectedPanel, 3); root.Children.Add(selectedPanel);
             StackPanel stopFeedback = new StackPanel();
             stopNote.Text = "Force stop may lose unsaved data in that process."; stopNote.Foreground = Color("#8A4B0F");
             stopNote.Visibility = Visibility.Collapsed; stopNote.TextWrapping = TextWrapping.Wrap; stopNote.Margin = new Thickness(0, 6, 0, 0);
-            actionStatus.Foreground = Color("#18263B"); actionStatus.TextWrapping = TextWrapping.Wrap; actionStatus.Margin = new Thickness(0, 5, 0, 0);
+            actionStatus.Foreground = Color("#000000"); actionStatus.TextWrapping = TextWrapping.Wrap; actionStatus.Margin = new Thickness(0, 5, 0, 0);
             stopFeedback.Children.Add(stopNote); stopFeedback.Children.Add(actionStatus);
             Grid.SetRow(stopFeedback, 4); root.Children.Add(stopFeedback);
-            status.Foreground = Color("#53647A"); status.FontSize = 12; status.TextWrapping = TextWrapping.Wrap;
+            status.Foreground = Color("#555555"); status.FontSize = 11; status.TextWrapping = TextWrapping.Wrap;
             status.Margin = new Thickness(0, 8, 0, 0);
             status.Text = "RAM = working set currently in physical memory (shared pages included). Private bytes = private committed memory; it may include paged-out memory.";
             Grid.SetRow(status, 5); root.Children.Add(status);
@@ -221,9 +218,9 @@ namespace DeviceScope
             Binding binding = new Binding(path);
             if (memory) binding.Converter = new MemoryValueConverter();
             Style text = new Style(typeof(TextBlock));
-            text.Setters.Add(new Setter(TextBlock.MarginProperty, new Thickness(7, 5, 7, 5)));
+            text.Setters.Add(new Setter(TextBlock.MarginProperty, new Thickness(4, 2, 4, 2)));
             text.Setters.Add(new Setter(TextBlock.TextTrimmingProperty, TextTrimming.CharacterEllipsis));
-            return new DataGridTextColumn { Header = title, Binding = binding, SortMemberPath = path, Width = new DataGridLength(width, DataGridLengthUnitType.Star), ElementStyle = text };
+            return new DataGridTextColumn { Header = title, Binding = binding, SortMemberPath = path, Width = new DataGridLength(width, DataGridLengthUnitType.Star), MinWidth = Math.Max(45, title.Length * 6 + 18), ElementStyle = text };
         }
 
         private void UpdateTimer()
